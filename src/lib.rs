@@ -17,6 +17,7 @@ pub mod seo_beacon {
         let protocol = &mut ctx.accounts.protocol;
         protocol.authority = authority;
         protocol.total_scores = 0;
+        protocol.total_echoes = 0;
         protocol.total_sbts_minted = 0;
         protocol.registration_fee = registration_fee;
         protocol.protocol_version = "3.0.0-solana".to_string();
@@ -223,6 +224,58 @@ pub mod seo_beacon {
         Ok(())
     }
 
+    /// Materialize a QEP-style echo from a valid score account.
+    pub fn register_echo_from_score(
+        ctx: Context<RegisterEchoFromScore>,
+        target: String,
+        report_hash: [u8; 32],
+        quantum_entropy: u64,
+        lattice_hash: [u8; 32],
+        source_chain_id: u64,
+    ) -> Result<()> {
+        require!(target.len() <= 64, ErrorCode::TargetTooLong);
+        require!(source_chain_id > 0, ErrorCode::InvalidChainId);
+
+        let score_account = &ctx.accounts.score_account;
+        require!(score_account.is_valid, ErrorCode::InvalidScore);
+        require!(score_account.target == target, ErrorCode::TargetMismatch);
+        require!(score_account.report_hash == report_hash, ErrorCode::ReportMismatch);
+
+        let clock = Clock::get()?;
+        let echo = &mut ctx.accounts.echo_account;
+        echo.target = target;
+        echo.report_hash = report_hash;
+        echo.aggregated_score = score_account.score;
+        echo.predictive_confidence = score_account.confidence;
+        echo.quantum_entropy = quantum_entropy;
+        echo.lattice_hash = lattice_hash;
+        echo.source_chain_id = source_chain_id;
+        echo.source_type = if score_account.has_zk_proof {
+            EchoSourceType::ZkScore
+        } else {
+            EchoSourceType::Score
+        };
+        echo.source_verifier = score_account.verifier;
+        echo.timestamp = clock.unix_timestamp;
+        echo.is_valid = true;
+        echo.bump = ctx.bumps.echo_account;
+
+        let protocol = &mut ctx.accounts.protocol;
+        protocol.total_echoes += 1;
+
+        emit!(EchoRegistered {
+            target: echo.target.clone(),
+            report_hash,
+            aggregated_score: echo.aggregated_score,
+            predictive_confidence: echo.predictive_confidence,
+            quantum_entropy,
+            source_chain_id,
+            timestamp: clock.unix_timestamp,
+        });
+
+        Ok(())
+    }
+
     /// Update ZK Merkle root (admin only)
     pub fn update_zk_merkle_root(
         ctx: Context<UpdateZKMerkleRoot>,
@@ -308,6 +361,7 @@ fn get_grade(score: u8) -> String {
 pub struct Protocol {
     pub authority: Pubkey,          // 32
     pub total_scores: u64,          // 8
+    pub total_echoes: u64,          // 8
     pub total_sbts_minted: u64,     // 8
     pub registration_fee: u64,      // 8
     pub protocol_version: String,   // 4 + len (max 20)
@@ -368,12 +422,28 @@ pub struct CrossChainScore {
     pub bump: u8,                   // 1
 }
 
+#[account]
+pub struct EchoAccount {
+    pub target: String,             // 4 + len (max 64)
+    pub report_hash: [u8; 32],      // 32
+    pub aggregated_score: u8,       // 1
+    pub predictive_confidence: u8,  // 1
+    pub quantum_entropy: u64,       // 8
+    pub lattice_hash: [u8; 32],     // 32
+    pub source_chain_id: u64,       // 8
+    pub source_type: EchoSourceType,// 1
+    pub source_verifier: Pubkey,    // 32
+    pub timestamp: i64,             // 8
+    pub is_valid: bool,             // 1
+    pub bump: u8,                   // 1
+}
+
 // ========================================
 // INSTRUCTION CONTEXTS
 // ========================================
 
-/// Space: 8 (discriminator) + 32 + 8 + 8 + 8 + (4+20) + 32 + 1 + 1 = 122
-const PROTOCOL_SPACE: usize = 8 + 32 + 8 + 8 + 8 + (4 + 20) + 32 + 1 + 1;
+/// Space: 8 (discriminator) + 32 + 8 + 8 + 8 + 8 + (4+20) + 32 + 1 + 1 = 130
+const PROTOCOL_SPACE: usize = 8 + 32 + 8 + 8 + 8 + 8 + (4 + 20) + 32 + 1 + 1;
 
 /// Space for ScoreAccount: 8 + (4+64) + 1 + 1 + 32 + (4+128) + 8 + 32 + 1 + 1 + 1 + 32 + 1 = 318
 const SCORE_SPACE: usize = 8 + (4 + 64) + 1 + 1 + 32 + (4 + 128) + 8 + 32 + 1 + 1 + 1 + 32 + 1;
@@ -386,6 +456,9 @@ const SBT_SPACE: usize = 8 + (4 + 64) + 32 + 8 + 1 + (4 + 10) + (4 + 128) + 1 + 
 
 /// Space for CrossChainScore: 8 + 8 + 32 + (4+64) + 1 + 1 + 32 + 8 + 1 + 8 + 1 = 168
 const CROSS_CHAIN_SPACE: usize = 8 + 8 + 32 + (4 + 64) + 1 + 1 + 32 + 8 + 1 + 8 + 1;
+
+/// Space for EchoAccount: 8 + (4+64) + 32 + 1 + 1 + 8 + 32 + 8 + 1 + 32 + 8 + 1 + 1 = 201
+const ECHO_SPACE: usize = 8 + (4 + 64) + 32 + 1 + 1 + 8 + 32 + 8 + 1 + 32 + 8 + 1 + 1;
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
@@ -461,8 +534,8 @@ pub struct RegisterScorePublic<'info> {
         payer = payer,
         space = SCORE_SPACE,
         seeds = [
-            b"score",
-            b"public",
+            b"score".as_ref(),
+            b"public".as_ref(),
             target.as_bytes(),
             payer.key().as_ref()
         ],
@@ -532,8 +605,8 @@ pub struct RegisterCrossChainScore<'info> {
         payer = authority,
         space = CROSS_CHAIN_SPACE,
         seeds = [
-            b"cross_chain",
-            &evm_chain_id.to_le_bytes(),
+            b"cross_chain".as_ref(),
+            evm_chain_id.to_le_bytes().as_ref(),
             target.as_bytes()
         ],
         bump
@@ -542,6 +615,37 @@ pub struct RegisterCrossChainScore<'info> {
 
     #[account(mut)]
     pub authority: Signer<'info>,
+
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+#[instruction(target: String, report_hash: [u8; 32])]
+pub struct RegisterEchoFromScore<'info> {
+    #[account(
+        mut,
+        seeds = [b"protocol"],
+        bump = protocol.bump
+    )]
+    pub protocol: Account<'info, Protocol>,
+
+    pub score_account: Account<'info, ScoreAccount>,
+
+    #[account(
+        init,
+        payer = verifier,
+        space = ECHO_SPACE,
+        seeds = [
+            b"echo",
+            target.as_bytes(),
+            report_hash.as_ref()
+        ],
+        bump
+    )]
+    pub echo_account: Account<'info, EchoAccount>,
+
+    #[account(mut)]
+    pub verifier: Signer<'info>,
 
     pub system_program: Program<'info, System>,
 }
@@ -572,6 +676,13 @@ pub enum InputType {
     Nft,
 }
 
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]
+pub enum EchoSourceType {
+    Score,
+    ZkScore,
+    CrossChain,
+}
+
 #[event]
 pub struct ScoreRegistered {
     pub target: String,
@@ -596,6 +707,17 @@ pub struct CrossChainScoreRegistered {
     pub target: String,
     pub score: u8,
     pub report_hash: [u8; 32],
+}
+
+#[event]
+pub struct EchoRegistered {
+    pub target: String,
+    pub report_hash: [u8; 32],
+    pub aggregated_score: u8,
+    pub predictive_confidence: u8,
+    pub quantum_entropy: u64,
+    pub source_chain_id: u64,
+    pub timestamp: i64,
 }
 
 #[event]
@@ -630,4 +752,10 @@ pub enum ErrorCode {
 
     #[msg("IPFS CID too long (max 128 chars)")]
     CidTooLong,
+
+    #[msg("Source chain id must be greater than zero")]
+    InvalidChainId,
+
+    #[msg("Target does not match the referenced score account")]
+    TargetMismatch,
 }
