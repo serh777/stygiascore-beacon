@@ -20,7 +20,9 @@ Try it live (nothing to install, no keys needed):
 
 | Path | What it is |
 |---|---|
-| `src/lib.rs`, `Cargo.toml`, `Xargo.toml` | The **Solana beacon program** (Anchor/Rust): the on-chain registry of scores. Instructions: `initialize`, `register_score_with_zk`, `register_score_public`, `mint_sbt`, `register_cross_chain_score`, `register_echo_from_score`, `update_zk_merkle_root`. |
+| `src/lib.rs`, `Cargo.toml`, `Xargo.toml` | The **Solana beacon program** (Anchor/Rust, 761 lines): the on-chain registry of scores. Instructions: `initialize`, `register_score_with_zk`, `register_score_public`, `mint_sbt`, `register_cross_chain_score`, `register_echo_from_score`, `update_zk_merkle_root`. |
+| `integration/solana/` | The **Solana client the live engine runs** (extracted from the private repo): RPC calls with hard timeouts, and the `getProgramStatus` that reports `Pending Deployment` instead of pretending. |
+| `scripts/deploy-solana.sh` | The **deploy script**: builds, writes the real program id into `Anchor.toml` and `declare_id!`, rebuilds, deploys to devnet. |
 | `evidence/nist-acvp/` | The **ACVP evidence**: the dispositions and submitted result files from a demo session we ran with NIST's ACVP demo server, including the SLH-DSA SHA2-128s vector-set results with a **PASS** (test session 763867). It is evidence, not a certification: it records which vectors we ran and how they came back. |
 
 ## What is **not** in this repository, and why
