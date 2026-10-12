@@ -1,0 +1,14 @@
+[
+  {
+    "tc_id": "slh-dsa-sha2-128s-local-example-000-placeholder",
+    "description": "PLACEHOLDER LOCAL (ADR-014: NO ES NIST ACVP). Sirve solo para mostrar FORMATO válido del schema. Reemplazar este archivo por el descargado del demo server NIST ACVP. NO CAMBIAR 'ad_hoc_vector_generated_locally' a false hasta tener respuesta oficial.",
+    "seed_keygen_hex": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "msg_digest_hex": "0xabcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234",
+    "expected_pk_hex": "0x" + "00".repeat(32),
+    "expected_sig_hex": "0x" + "00".repeat(7856),
+    "expected_verify_result": true,
+    "tamper_sig_1bit_expect_fail": true,
+    "ad_hoc_vector_generated_locally": true,
+    "nist_acvp_metadata": null
+  }
+]

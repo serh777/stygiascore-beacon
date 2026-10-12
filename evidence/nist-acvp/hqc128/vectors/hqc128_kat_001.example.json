@@ -1,0 +1,13 @@
+[
+  {
+    "tc_id": "hqc128-local-smoke-executed-20260822-adrhonestplaceholder",
+    "description": "PLACEHOLDER LOCAL — ADR-014: este vector NO es NIST ACVP. Es simplemente el roundtrip smoke execute del SP1 zkVM guardado A MODO DE EJEMPLO de formato. Reemplazar TODO este archivo POR LOS VECTORES REALES DESCARGADOS DEL DEMO SERVER NIST ACVP. NO CAMBIAR el campo ad_hoc_vector_generated_locally a false hasta tener respuesta oficial del correo enviado a acvts-demo@nist.gov 2026-08-23.",
+    "seed_keygen_hex": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "seed_encaps_hex": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "expected_ss_hex": "0xc264959123781a13bb2c2983577916c0094412eeadd7b3e68d0e98fb1d5c7ebe",
+    "expected_ct_hex": "0x3ef12db7ad661c711ba57f25c3dc35d0d91e7d5cf5dc22bf12339c445fa1af43976c9407f5b76fc6a0f1cbb148adf5c70b025b73029ec311873471a9165868a2",
+    "tamper_ct_1bit_expect_mismatch": true,
+    "ad_hoc_vector_generated_locally": true,
+    "nist_acvp_metadata": null
+  }
+]

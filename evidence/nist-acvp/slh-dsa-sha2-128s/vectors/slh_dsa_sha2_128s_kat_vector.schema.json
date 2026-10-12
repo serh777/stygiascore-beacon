@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SLH-DSA-SHA2-128s KAT vector NIST ACVP — QuantumEchoProtocol ADR-014",
+  "description": "Schema vectores KAT NIST ACVP SLH-DSA-SHA2-128s FIPS-205. ad_hoc_vector_generated_locally=true => tests LO SALTAN.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["tc_id", "seed_keygen_hex", "msg_digest_hex", "expected_pk_hex", "expected_sig_hex", "expected_verify_result"],
+    "properties": {
+      "tc_id": { "type": "string" },
+      "description": { "type": "string" },
+      "seed_keygen_hex": { "type": "string", "pattern": "^(0x)?[0-9a-fA-F]{192}$", "description": "FIPS-205 SLH-DSA SHA2-128s SEED=96 bytes" },
+      "msg_digest_hex": { "type": "string", "pattern": "^(0x)?[0-9a-fA-F]{64}$", "description": "Pre-computed SHA2-256 digest (msg len arbitrary, hash calculado fuera)" },
+      "expected_pk_hex": { "type": "string", "pattern": "^(0x)?[0-9a-fA-F]{64}$", "description": "PK=32 bytes" },
+      "expected_sig_hex": { "type": "string", "pattern": "^(0x)?[0-9a-fA-F]{15712}$", "description": "SIG=7856 bytes (SLH-DSA SHA2-128s determinista con el randomizador dado por seed[SK_RAND:])" },
+      "expected_verify_result": { "type": "boolean" },
+      "tamper_sig_1bit_expect_fail": { "type": "boolean" },
+      "ad_hoc_vector_generated_locally": {
+        "type": "boolean",
+        "default": true,
+        "description": "ADR-014 gate. Poner false SOLO cuando sea vector ACVP descargado de NIST."
+      },
+      "nist_acvp_metadata": {
+        "type": "object",
+        "properties": {
+          "vsId": { "type": ["integer","string"] },
+          "algorithm": { "type": "string", "const": "SLH-DSA" },
+          "parameterSet": { "type": "string", "const": "SHA2-128s" }
+        }
+      }
+    }
+  }
+}

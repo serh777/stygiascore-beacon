@@ -1,0 +1,81 @@
+[
+  {
+    "acvVersion": "1.0"
+  },
+  {
+    "vsId": 4022387,
+    "algorithm": "SLH-DSA",
+    "mode": "keyGen",
+    "revision": "FIPS205",
+    "isSample": false,
+    "testGroups": [
+      {
+        "tgId": 1,
+        "testType": "AFT",
+        "parameterSet": "SLH-DSA-SHA2-128s",
+        "tests": [
+          {
+            "tcId": 1,
+            "skSeed": "137FB2E417477260552AAA90687C507D",
+            "skPrf": "0D688BE45E42FB899C980D884E99EBDD",
+            "pkSeed": "405003761B48654F462B22FB1A5BD4E3"
+          },
+          {
+            "tcId": 2,
+            "skSeed": "28867BF13DAADE3729839BF7DF9B5483",
+            "skPrf": "3695797F673818263785AC4367255F76",
+            "pkSeed": "104B0EA9A9C5058BAFF2FF396B6185D4"
+          },
+          {
+            "tcId": 3,
+            "skSeed": "D1F1313326619F97FFFEF1C62E43FC04",
+            "skPrf": "FE94B3FE33CC43FBD0EFE6A746CE4DAF",
+            "pkSeed": "74685600F0E8370361AD40C9C7ACE31B"
+          },
+          {
+            "tcId": 4,
+            "skSeed": "FF5CD5610BD77E5FDB97F3E92A341644",
+            "skPrf": "A5B0A3333D2CAEAA2712223178A8B0AF",
+            "pkSeed": "71606BE6F24D4B341442F19AADA7B0CE"
+          },
+          {
+            "tcId": 5,
+            "skSeed": "3CED063FED17EC350D14810BD5C3D838",
+            "skPrf": "7E276CF45CDDC9AEF3DB78E8353D0925",
+            "pkSeed": "FCEB825E48822B29E43F614826FD334F"
+          },
+          {
+            "tcId": 6,
+            "skSeed": "7CBCEFA353F0A4C3E7A73A09AE35D95C",
+            "skPrf": "86A8A31F1615898FCDA6A4D14C397882",
+            "pkSeed": "20C2D6B88B35C18396125C759E4EF11B"
+          },
+          {
+            "tcId": 7,
+            "skSeed": "D5516F4D48607EDDBBCB134DD8104A88",
+            "skPrf": "EC2D97E7FDEB10277BC28575163F1EBD",
+            "pkSeed": "CC9F68F41554F6B74CAA71B28BE0828E"
+          },
+          {
+            "tcId": 8,
+            "skSeed": "D771272A2302B336A84F4A0131AEF543",
+            "skPrf": "77032883454F33F5DC26A8B7FD1E2846",
+            "pkSeed": "F261CDE648E26C121B835FB2FBC803D9"
+          },
+          {
+            "tcId": 9,
+            "skSeed": "E158D68E8E2C557564CBE1A4991E1057",
+            "skPrf": "BEA23BDF8AE827A5D32D6379B2853422",
+            "pkSeed": "CD1E97FDBF22A3769BC1F629FA205332"
+          },
+          {
+            "tcId": 10,
+            "skSeed": "E0DA243B8A98C16488A666C2E247CFC3",
+            "skPrf": "0A157ACC5E22114CDD1CF059A122DC59",
+            "pkSeed": "2E07F32E5913DA13881EE2F8606A735E"
+          }
+        ]
+      }
+    ]
+  }
+]

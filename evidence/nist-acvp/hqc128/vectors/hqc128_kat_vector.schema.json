@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HQC-128 KAT vector NIST ACVP — QuantumEchoProtocol ADR-014",
+  "description": "Schema para archivos de vectores KAT NIST ACVP HQC-128. ADVERTENCIA: el campo ad_hoc_vector_generated_locally DEBE estar en false para que los tests lo consideren válido. Si está en true los tests se saltan ADR-014.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["tc_id", "seed_keygen_hex", "seed_encaps_hex", "expected_ss_hex"],
+    "properties": {
+      "tc_id": { "type": "string", "description": "ID NIST ACVP testCase (ej: hqc128-0001)" },
+      "description": { "type": "string" },
+      "seed_keygen_hex": { "type": "string", "pattern": "^(0x)?[0-9a-fA-F]{64}$", "description": "SEED32 para generate_key_deterministic" },
+      "seed_encaps_hex": { "type": "string", "pattern": "^(0x)?[0-9a-fA-F]{64}$", "description": "SEED32 donde seed[0..16]=m, seed[16..32]=salt (FO FIPS-207)" },
+      "expected_pk_hex": { "type": "string", "pattern": "^(0x)?[0-9a-fA-F]{4482}$", "description": "PK=2241 bytes (4482 hex)" },
+      "expected_sk_hex": { "type": "string", "pattern": "^(0x)?[0-9a-fA-F]{4642}$", "description": "SK=2321 bytes (4642 hex)" },
+      "expected_ct_hex": { "type": "string", "pattern": "^(0x)?[0-9a-fA-F]{8866}$", "description": "CT=4433 bytes (8866 hex)" },
+      "expected_ss_hex": { "type": "string", "pattern": "^(0x)?[0-9a-fA-F]{64}$", "description": "SS=32 bytes (64 hex). ADVERTENCIA HONESTIDAD: este campo DEBE salir del NIST. Si lo copias del host local sp1-sdk NO ES KAT OFICIAL." },
+      "tamper_ct_1bit_expect_mismatch": { "type": "boolean", "description": "Opcional: si true, se prueba ct^1bit produce ss distinto" },
+      "ad_hoc_vector_generated_locally": {
+        "type": "boolean",
+        "default": true,
+        "description": "ADR-014 gate: SI ES true, LOS TESTS LO SALTAN. Cambiar a false SOLO cuando el vector haya sido descargado del ACVP demo server NIST. NO CAMBIARLO SIN RESPUESTA OFICIAL NIST."
+      },
+      "nist_acvp_metadata": {
+        "type": "object",
+        "description": "Meta opcional: ids de sesión, vectorSet, vsId, promptGroupId, etc. para auditoría ADR-014",
+        "properties": {
+          "vsId": { "type": ["integer","string"] },
+          "promptGroupId": { "type": ["integer","string"] },
+          "algorithm": { "type": "string", "const": "HQC" },
+          "mode": { "type": "string", "enum": ["keyGen", "encap", "decap", "full-roundtrip"] },
+          "serverDownloadedAt_iso8601": { "type": "string", "format": "date-time" },
+          "acvpClientUsed": { "type": "string", "enum": ["libacvp", "direct-api-postman", "other"] }
+        }
+      }
+    }
+  }
+}

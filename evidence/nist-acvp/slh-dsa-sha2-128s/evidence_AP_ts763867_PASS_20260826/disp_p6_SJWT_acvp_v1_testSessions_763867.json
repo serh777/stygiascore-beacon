@@ -1,0 +1,18 @@
+[
+  {
+    "acvVersion": "1.0"
+  },
+  {
+    "url": "/acvp/v1/testSessions/763867",
+    "createdOn": "2026-08-26T23:36:01Z",
+    "expiresOn": "2026-09-25T23:39:07Z",
+    "vectorSetUrls": [
+      "/acvp/v1/testSessions/763867/vectorSets/4022387",
+      "/acvp/v1/testSessions/763867/vectorSets/4022388",
+      "/acvp/v1/testSessions/763867/vectorSets/4022389"
+    ],
+    "publishable": true,
+    "passed": true,
+    "isSample": false
+  }
+]
