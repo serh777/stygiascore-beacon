@@ -1,0 +1,12 @@
+# Anchor workspace for the StygiaScore beacon.
+# Deployed on Solana devnet on 2026-10-12; the same program id is used locally.
+
+[programs.localnet]
+seo_beacon = "FPwV4FMZRdbymHLBpZVDuifvbKSjWbKsLZnSZ35btd3n"
+
+[programs.devnet]
+seo_beacon = "FPwV4FMZRdbymHLBpZVDuifvbKSjWbKsLZnSZ35btd3n"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"

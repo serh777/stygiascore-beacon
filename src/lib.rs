@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::keccak;
 
-declare_id!("11111111111111111111111111111111");
+declare_id!("FPwV4FMZRdbymHLBpZVDuifvbKSjWbKsLZnSZ35btd3n");
 
 #[program]
 pub mod seo_beacon {

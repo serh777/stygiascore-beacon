@@ -20,7 +20,7 @@ Try it live (nothing to install, no keys needed):
 
 | Path | What it is |
 |---|---|
-| `src/lib.rs`, `Cargo.toml`, `Xargo.toml` | The **Solana beacon program** (Anchor/Rust, 761 lines): the on-chain registry of scores. Instructions: `initialize`, `register_score_with_zk`, `register_score_public`, `mint_sbt`, `register_cross_chain_score`, `register_echo_from_score`, `update_zk_merkle_root`. |
+| `src/lib.rs`, `Cargo.toml`, `Xargo.toml`, `Anchor.toml` | The **Solana beacon program** (Anchor/Rust, 761 lines), **deployed on devnet**: the on-chain registry of scores. Instructions: `initialize`, `register_score_with_zk`, `register_score_public`, `mint_sbt`, `register_cross_chain_score`, `register_echo_from_score`, `update_zk_merkle_root`. |
 | `integration/solana/` | The **Solana client the live engine runs** (extracted from the private repo): RPC calls with hard timeouts, and the `getProgramStatus` that reports `Pending Deployment` instead of pretending. |
 | `scripts/deploy-solana.sh` | The **deploy script**: builds, writes the real program id into `Anchor.toml` and `declare_id!`, rebuilds, deploys to devnet. |
 | `evidence/nist-acvp/` | The **ACVP evidence**: the dispositions and submitted result files from a demo session we ran with NIST's ACVP demo server, including the SLH-DSA SHA2-128s vector-set results with a **PASS** (test session 763867). It is evidence, not a certification: it records which vectors we ran and how they came back. |
@@ -50,9 +50,14 @@ anchor test
 
 ## Deployment status (stated honestly)
 
-- The beacon program is **written and reviewed but not deployed yet**: its `declare_id!` is still the placeholder, and our own production API reports it in its own words — `GET https://api.stygiascore.com/v1/solana/program-status` → `{"ok":true,"network":"devnet","programId":"Pending Deployment","deployed":false}`.
-- Solana is already a **target chain inside the engine** (chain id 900): the production API reads Solana devnet accounts today (`/v1/solana/account/:address`).
-- Deploying the beacon to devnet, and minting the first Solana SBTs for scoring projects, is the work this repository exists to carry.
+- **The beacon is live on Solana devnet** (deployed 2026-10-12):
+  - program id: `FPwV4FMZRdbymHLBpZVDuifvbKSjWbKsLZnSZ35btd3n`
+  - deployed in slot `510199674`, upgrade authority `9n9ggc4KdR3mHVfVduSvQnqhS5cHK5BAswTUa6V3AJSa`
+  - transaction: `4WBnMwwo1kAD3t77gLtVxqEJwQW5omBawVRu2xG5D7QNKu7xddhSBwJDt6ZURYV56s6jwtvAjXw3V6QSh9MGo7Vr`
+  - check it yourself: https://explorer.solana.com/address/FPwV4FMZRdbymHLBpZVDuifvbKSjWbKsLZnSZ35btd3n?cluster=devnet
+- Our own production API says it in its own words — `GET https://api.stygiascore.com/v1/solana/program-status` → `{"ok":true,"network":"devnet","programId":"FPwV4FMZRdbymHLBpZVDuifvbKSjWbKsLZnSZ35btd3n","deployed":true}`.
+- Solana is a **target chain inside the engine** (chain id 900): the production API reads Solana devnet accounts today (`/v1/solana/account/:address`).
+- What is **not** done yet, so nobody has to guess: the engine does not call the beacon's instructions from production yet (no score has been registered on-chain from the live product), the program has not been through an external audit, and its upgrade authority is a single key.
 
 ## Disclosure
 
