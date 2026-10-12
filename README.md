@@ -55,6 +55,7 @@ anchor test
   - deployed in slot `510199674`, upgrade authority `9n9ggc4KdR3mHVfVduSvQnqhS5cHK5BAswTUa6V3AJSa`
   - transaction: `4WBnMwwo1kAD3t77gLtVxqEJwQW5omBawVRu2xG5D7QNKu7xddhSBwJDt6ZURYV56s6jwtvAjXw3V6QSh9MGo7Vr`
   - check it yourself: https://explorer.solana.com/address/FPwV4FMZRdbymHLBpZVDuifvbKSjWbKsLZnSZ35btd3n?cluster=devnet
+  - **reproducible build**: compiling the source in this repository (`cargo-build-sbf --arch v1`) produces sha256 `943b8e557dd54d734e9598a1e15a9167fb73e034b137a937e9a98c1bf88612b3` — byte-identical to the program dumped from devnet with `solana program dump`. Anyone can check it.
 - Our own production API says it in its own words — `GET https://api.stygiascore.com/v1/solana/program-status` → `{"ok":true,"network":"devnet","programId":"FPwV4FMZRdbymHLBpZVDuifvbKSjWbKsLZnSZ35btd3n","deployed":true}`.
 - Solana is a **target chain inside the engine** (chain id 900): the production API reads Solana devnet accounts today (`/v1/solana/account/:address`).
 - What is **not** done yet, so nobody has to guess: the engine does not call the beacon's instructions from production yet (no score has been registered on-chain from the live product), the program has not been through an external audit, and its upgrade authority is a single key.
