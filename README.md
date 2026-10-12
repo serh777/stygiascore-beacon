@@ -59,6 +59,16 @@ anchor test
 - Solana is a **target chain inside the engine** (chain id 900): the production API reads Solana devnet accounts today (`/v1/solana/account/:address`).
 - What is **not** done yet, so nobody has to guess: the engine does not call the beacon's instructions from production yet (no score has been registered on-chain from the live product), the program has not been through an external audit, and its upgrade authority is a single key.
 
+### The program has been called, not just deployed
+
+`initialize` ran against devnet on 2026-10-12 and created the protocol account:
+
+- PDA: `8xqyggWCdvXyknWC7PF2hqyz2z6HYn6oABdQHAzVmBLk` — owned by the program, 130 bytes, `protocol_version = "3.0.0-solana"`
+- transaction: `4FMyk6AdE2RVdyD9eymD21qsi2k2y4YBRz6yxYitQUqTzqGcvBuvqsq2hmUSyiNZnxwSWP3NuDk9nb9oHhhnQGVn`
+- check it yourself: https://explorer.solana.com/address/8xqyggWCdvXyknWC7PF2hqyz2z6HYn6oABdQHAzVmBLk?cluster=devnet
+
+The instruction was encoded without an IDL (discriminator `sha256("global:initialize")[0..8]` plus the Borsh arguments), so anyone can reproduce the call from the source in this repository. What is **not** done yet: no score has been registered on-chain from the live product, and the program has not had an external audit.
+
 ## Disclosure
 
 This repository contains work that pre-dates the Colosseum hackathon: the Solana program was written earlier in 2026, and the NIST ACVP evidence is from August 2026. It is published here as the reviewable part of a project that has been under construction since 2024. What was added for Colosseum: Solana support in the score path and the beacon deployment.
